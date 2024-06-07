@@ -14,5 +14,7 @@ namespace GarajYeriModels
         public string? FilePath { get; set; }
         public int PolicyTypeId { get; set; }
         public PolicyType PolicyType { get; set; }
+        public int VehicleId { get; set; }
+        public virtual Vehicle Vehicle { get; set; }
     }
 }
