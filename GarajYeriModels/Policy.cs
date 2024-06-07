@@ -11,6 +11,7 @@ namespace GarajYeriModels
         public string Name { get; set; }
         public string CompanyName { get; set; } // sigorta firması
         public DateTime Validity { get; set; }
+        public string? FilePath { get; set; }
         public int PolicyTypeId { get; set; }
         public PolicyType PolicyType { get; set; }
     }
