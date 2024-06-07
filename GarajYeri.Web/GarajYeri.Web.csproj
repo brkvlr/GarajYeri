@@ -6,4 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameWorkCore" Version="8.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameWorkCore.SqlServer" Version="8.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GarajYeri.Data\GarajYeri.Data.csproj" />
+  </ItemGroup>
+
 </Project>
