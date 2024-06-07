@@ -17,5 +17,6 @@ namespace GarajYeriModels
         public virtual AppUser AppUser { get; set; }
         public virtual ICollection<VehiclePhoto> VehiclePhotos { get; set; } = new List<VehiclePhoto>();
         public virtual ICollection<VehicleProcess> VehicleProcesses { get; set; } = new List<VehicleProcess>();
+        public virtual ICollection<VehicleInspection> VehicleInspections { get; set;} = new List<VehicleInspection>();
     }
 }
