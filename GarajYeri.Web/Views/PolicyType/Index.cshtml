@@ -55,29 +55,31 @@
             DataTable = $("#tblPolicyTypes").DataTable({
                 ajax:'/PolicyType/GetAll',
                 columns:[
-                    {data:'id',title:'ID'},
-                    {data:'name',title:'Poliçe Tip Adı'},
+                    {data:'id', title:'ID'},
+                    {data:'name', title:'Poliçe Tip Adı'},
                     {data:'id', title:'İşlemler'}
                 ]
             });
 
-            // arrow function
+            //arrow function
             $("#btnAdd").click(() => {
                 $("#modalAdd").modal("show");
                 $("#modalTitle").text("Yeni Poliçe Tipi Ekle");
 
-                $("#btnSave").text("Kaydet").click(() => {
+                $("#btnSave").text("Kaydet").off().click(() => {
+
                     $.ajax({
-                        url:'/PolicyType/Add',
-                        type:'POST',
+                        url: '/PolicyType/Add',
+                        type: 'POST',
                         data: {
-                            policyType:{
-                                name:$("#txtName").val()
-                            },
-                            success: (res) => {
-                                $("#modalAdd").show("hide");
-                                DataTable.row.add(res).draw();
+                            policyType: {
+                                name: $("#txtName").val()
                             }
+                        },
+                        success: (res) => {
+                            $("#modalAdd").modal("hide");
+                            DataTable.row.add(res).draw();
+
                         }
                     });
                 });
