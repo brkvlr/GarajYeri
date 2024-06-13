@@ -46,7 +46,7 @@ namespace GarajYeri.Web.Controllers
         public IActionResult SoftDelete(int id)
         {
            var policyType = _context.PolicyTypes.Find(id);
-            if (policyType == null)
+            if (policyType != null)
             {
                 policyType.IsDeleted = true;
                 _context.PolicyTypes.Update(policyType);
@@ -76,6 +76,12 @@ namespace GarajYeri.Web.Controllers
             _context.PolicyTypes.Update(policyType);
             _context.SaveChanges();
             return Ok(policyType);
+        }
+
+        [HttpPost]
+        public IActionResult GetById(int id)
+        {
+            return Ok(_context.PolicyTypes.Find(id));
         }
     }
 }

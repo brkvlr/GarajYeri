@@ -57,7 +57,11 @@
                 columns:[
                     {data:'id', title:'ID'},
                     {data:'name', title:'Poliçe Tip Adı'},
-                    {data:'id', title:'İşlemler'}
+                    { data: 'id', title: 'İşlemler', render: (data) => {
+                        return `<a onclick="deletePolicyType(${data},this)" title="Sil" class="btn uil-trash-alt fs-6 btn-danger"></<a href="#"></a>
+                        <a onclick="updatePolicyType(${data},this)" title="Düzenle" class="btn uil-pen fs-6 btn-success"></a>`
+                    }
+                    }
                 ]
             });
 
@@ -85,5 +89,57 @@
                 });
             });
         });
+
+        function deletePolicyType(policyTypeId, button) { 
+            if (confirm("Emin misin?")) {
+
+                $.ajax({
+                    url:'/PolicyType/SoftDelete',
+                    type:'POST',
+                    data: {
+                        id: policyTypeId
+                    },
+                    success: () => {
+                        let satir = $(button).parent().parent();
+                        DataTable.row(satir).remove().draw();
+
+                    }
+                });
+            }
+        }
+
+        function updatePolicyType(policyTypeId, button) {
+
+            $.ajax({
+                url:'/PolicyType/GetById',
+                type:'POST',
+                data: {
+                    id:policyTypeId
+                },
+                success: (res) => {
+                    $("#modalAdd").modal("show");
+                    $("#modalTitle").text("Güncelle");
+                    $("#txtName").val(res.name);
+
+                    $("#btnSave").text("Güncelle").off().click(() => {
+
+                        res.name = $("#txtName").val();
+
+                        $.ajax({
+                            url:'/PolicyType/Update',
+                            type:'POST',
+                            data: {
+                                policyType:res
+                            },
+                            success:()=> {
+                                $("#modalAdd").modal("hide");
+                                let satir = $(button).parent().parent();
+                                DataTable.row(satir).data(res).draw();
+                            }
+                        });
+                    });
+                }
+            });
+        }
     </script>
 }
