@@ -46,13 +46,15 @@
         var DataTable = "";
 
         $(document).ready(() => {
-            DataTable = $("tblVehicleTypes").DataTable({
+                DataTable = $("#tblVehicleTypes").DataTable({
                 ajax:'/VehicleType/GetAll',
                 columns:[
                     {data:'id',title:'ID'},
                     {data:'name', title:'Araç Tipi'},
-                    { data: 'id', title: 'İşlemler', render: () => {
+                    { 
+                        data: 'id', title: 'İşlemler', render: (data) => {
                                 return `<a onclick="deleteVehicleType(${data},this)" class="btn uil-trash-alt fs-6 btn-danger"></a> <a onclick="updateVehicleType(${data},this)" class="btn uil-pen fs-6 btn-success"></a>`;
+                        }
                     }
                 ]
             });
@@ -71,13 +73,68 @@
                             }
                         },
                         success: (res) => {
-                            DataTable.row().add(res).draw();
-                            $("modalAdd").modal("hide");
+                            DataTable.row.add(res).draw();
+                            $("#modalAdd").modal("hide");
                         }
                     });
                 });
             });
 
         });
+
+        function deleteVehicleType(vehicleTypeId, button) {
+            if (confirm("Emin misiniz?")) {
+                $.ajax({
+                    url:'/VehicleType/SoftDelete',
+                    type:'POST',
+                    data: {
+                        id: vehicleTypeId
+                    },
+                    success: () => {
+                        let satir = $(button).parent().parent();
+                        DataTable.row(satir).remove().draw();
+                    }
+                });
+            }
+        }
+
+        function updateVehicleType(vehicleTypeId, button) {
+                $.ajax({
+                    url: '/VehicleType/GetById',
+                    type: 'POST',
+                    data: { 
+                        id: vehicleTypeId 
+                    },
+                    success: function (res) {
+
+                        $("#txtName").val(res.name);
+                        $("#modalAdd").modal("show");
+
+                        $("#btnSave").text("Düzenle").off().click(function () {
+
+                            res.name = $("#txtName").val();
+
+                            $.ajax({
+                                url: '/VehicleType/Update',
+                                type: 'POST',
+                                data: {
+                                    vehicleType: res
+                                },
+                                success: function () {
+                                    $("#modalAdd").modal("hide");
+                                    let satir = $(button).parent().parent();
+                                    DataTable.row(satir).data(res).draw();
+
+                                }
+                            });
+
+
+                        });
+
+                    }
+
+                });
+
+            }
     </script>
 }
