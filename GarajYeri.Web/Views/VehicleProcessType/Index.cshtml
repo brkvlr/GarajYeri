@@ -49,20 +49,44 @@
     <script>
         var DataTable = "";
         $(document).ready(() => {
-            $("#tblVehicleProcessTypes").DataTable({
-                ajax:'/VehicleProcessType/GetAll',
+            DataTable = $("#tblVehicleProcessTypes").DataTable({
+                ajax: '/VehicleProcessType/GetAll',
                 columns: [
-                    {data:'id',title:'ID'},
+                    { data: 'id', title: 'ID' },
                     { data: 'name', title: 'İşlem Tipi Adı' },
-                    { 
+                    {
                         data: 'id', title: 'İşlemler', render: (data) => {
                             return `<a onclick="deleteVehicleProcessType(${data},this)" title="Sil" class="btn uil-trash-alt fs-6 btn-danger"></<a href="#"></a>
-                                <a onclick="updateVehicleProcessType(${data},this)" title="Düzenle" class="btn uil-pen fs-6 btn-success"></a>`
+                                        <a onclick="updateVehicleProcessType(${data},this)" title="Düzenle" class="btn uil-pen fs-6 btn-success"></a>`
                         }
                     }
                 ]
 
             });
-        })
+
+            $("#btnAdd").click(() => {
+                $("#modalAdd").modal("show");
+                $("#btnSave").text("Kaydet").off().click(() => {
+                    $.ajax({
+                        url: '/VehicleProcessType/Add',
+                        type: 'POST',
+                        data: {
+                            vehicleProcessType: {
+                                name: $("#txtName").val()
+                            }
+
+                        },
+                        success: (res) => {
+
+                            DataTable.row.add(res).draw();
+                            $("#modalAdd").modal("hide");
+                        }
+                    });
+                });
+            });
+        });
+
+
+
     </script>
 }
