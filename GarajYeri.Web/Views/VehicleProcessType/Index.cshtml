@@ -61,7 +61,6 @@
                         }
                     }
                 ]
-
             });
 
             $("#btnAdd").click(() => {
@@ -86,7 +85,21 @@
             });
         });
 
+        function deleteVehicleProcessType(vehicleProcessTypeId, button) {
 
-
+            if (confirm("Emin misin?")) {
+                $.ajax({
+                    url: '/VehicleProcessType/SoftDelete',
+                    type: 'POST',
+                    data: {
+                        id: vehicleProcessTypeId
+                    },
+                    success: () => {
+                        let satir = $(button).parent().parent();
+                        DataTable.row(satir).remove().draw();
+                    }
+                });
+            }
+        }
     </script>
 }
