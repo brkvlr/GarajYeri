@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GarajYeri.Data\GarajYeri.Data.csproj" />
+    <ProjectReference Include="..\GarajYeri.Repository\GarajYeri.Repository.csproj" />
   </ItemGroup>
 
 </Project>
