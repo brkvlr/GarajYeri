@@ -1,6 +1,7 @@
 ﻿using GarajYeri.Data;
 using GarajYeri.Repository.Shared.Abstract;
 using GarajYeriModels;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace GarajYeri.Repository.Shared.Concrate
         public T Add(T entity)
         {
             _dbSet.Add(entity);
+            Save();
             return entity;
 
             // _context.Set<T>().Add(entity);
@@ -33,18 +35,23 @@ namespace GarajYeri.Repository.Shared.Concrate
         public T Delete(T entity)
         {
             _dbSet.Remove(entity);
+            Save();
             return entity;
         }
 
         public T DeleteById(int id)
         {
             T entity = _dbSet.Find(id);
-            entity.IsDeleted= true;
-            entity.DateDeleted=DateTime.Now;
-            _dbSet.Update(entity);
+            if (entity != null)
+            {
+
+
+                entity.IsDeleted = true;
+                entity.DateDeleted = DateTime.Now;
+                _dbSet.Update(entity);
+                Save();
+            }
             return entity;
-
-
         }
 
         public IEnumerable<T> GetAll()
@@ -69,6 +76,7 @@ namespace GarajYeri.Repository.Shared.Concrate
         public T Update(T entity)
         {
             _dbSet.Update(entity);
+            Save();
             return entity;
         }
 
