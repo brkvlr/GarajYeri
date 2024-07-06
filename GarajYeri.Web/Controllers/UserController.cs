@@ -1,4 +1,5 @@
 ﻿using GarajYeri.Data;
+using GarajYeri.Repository.Shared.Abstract;
 using GarajYeriModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,11 +10,11 @@ namespace GarajYeri.Web.Controllers
 {
     public class UserController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<AppUser> _appUserRepository;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(IRepository<AppUser> appUserRepository)
         {
-            _context = context;
+            _appUserRepository = appUserRepository;
         }
 
         public IActionResult Index()
@@ -23,7 +24,7 @@ namespace GarajYeri.Web.Controllers
 
         public IActionResult GetAll()
         {
-            return Json(new {data=_context.Users.Where(u=>!u.IsDeleted).ToList()});
+            return Json(new {data=_appUserRepository.GetAll()});
         }
 
         public IActionResult Login()
@@ -34,7 +35,7 @@ namespace GarajYeri.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(AppUser appUser)
         {
-            AppUser user = _context.Users.FirstOrDefault(u=> u.UserName == appUser.UserName && u.Password == appUser.Password);
+            AppUser user = _appUserRepository.GetFirstOrDefault(u=> u.UserName == appUser.UserName && u.Password == appUser.Password);
             if (user != null)
             {
                 List<Claim> claims = new List<Claim>();
@@ -62,41 +63,26 @@ namespace GarajYeri.Web.Controllers
         [HttpPost]
         public IActionResult Add(AppUser appUser)
         {
-            _context.Users.Add(appUser);
-            _context.SaveChanges();
-            return Ok(appUser);
-        }
-
-        [HttpPost]
-        public IActionResult HardDelete(AppUser appUser)
-        {
-            _context.Users.Remove(appUser);
-            _context.SaveChanges();
-            return Ok();
+            return Ok(_appUserRepository.Add(appUser));
         }
 
         [HttpPost]
         public IActionResult SoftDelete(int id)
         {
-            AppUser appUser = _context.Users.Find(id);
-            appUser.IsDeleted = true;
-            _context.Users.Update(appUser);
-            _context.SaveChanges();
+            _appUserRepository.DeleteById(id);
             return Ok();
         }
 
         [HttpPost]
         public IActionResult Update(AppUser appUser)
         {
-            _context.Users.Update(appUser);
-            _context.SaveChanges();
-            return Ok(appUser);
+            return Ok(_appUserRepository.Update(appUser));
         }
 
         [HttpPost]
         public IActionResult GetById(int id)
         {
-            return Ok(_context.Users.Find(id));
+            return Ok(_appUserRepository.GetById(id));
         }
 
 
