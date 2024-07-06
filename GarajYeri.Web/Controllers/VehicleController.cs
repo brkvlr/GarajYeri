@@ -1,4 +1,5 @@
 ﻿using GarajYeri.Data;
+using GarajYeri.Repository.Abstract;
 using GarajYeriModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,11 @@ namespace GarajYeri.Web.Controllers
     [Authorize]
     public class VehicleController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVehicleRepository _vehicleRepository;
 
-        public VehicleController(ApplicationDbContext context)
+        public VehicleController(IVehicleRepository vehicleRepository)
         {
-            _context = context;
+            _vehicleRepository = vehicleRepository;
         }
 
         public IActionResult Index()
@@ -24,57 +25,36 @@ namespace GarajYeri.Web.Controllers
 
         public IActionResult GetAll()
         {
-            if(User.IsInRole("Admin"))
-            {
-                var result = _context.Vehicles.Where(v=>!v.IsDeleted).Select(v=>new Vehicle
-                {
-                    Name = v.Name,
-                    Odometer = v.Odometer,
-                    Id = v.Id,
-                    LicensePlate = v.LicensePlate,
-                    VehicleType = v.VehicleType,
-                    AppUser = v.AppUser
-                });
-                return Json(new {data=result});
-            }
-            else
-            {
-                int appUserId = int.Parse(User.FindFirst(c=> c.Type==ClaimTypes.NameIdentifier).Value);
-                var result = _context.Vehicles.Where(v => !v.IsDeleted && v.AppUserId == appUserId);
-                return Json(new { data = result });
-            }
+            bool isAdmin = User.IsInRole("Admin");
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        
+            return Json(new { data = _vehicleRepository.GetAll(isAdmin,userId) });
+
         }
 
         [HttpPost]
         public IActionResult Add(Vehicle vehicle)
         {
-            _context.Vehicles.Add(vehicle);
-            _context.SaveChanges();
-            return Ok(vehicle);
+            return Ok(_vehicleRepository.Add(vehicle));
         }
 
         [HttpPost]
         public IActionResult Update(Vehicle vehicle)
         {
-            _context.Vehicles.Update(vehicle);
-            _context.SaveChanges();
-            return Ok(vehicle);
+            return Ok(_vehicleRepository.Update(vehicle));
         }
 
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            Vehicle vehicle = _context.Vehicles.Find(id);
-            vehicle.IsDeleted=true;
-            _context.Vehicles.Update(vehicle);
-            _context.SaveChanges();
-            return Ok(vehicle);
+            _vehicleRepository.DeleteById(id);
+            return Ok();
         }
 
         [HttpPost]
         public IActionResult GetById(int id)
         {
-            return Ok(_context.Vehicles.Find(id));
+            return Ok(_vehicleRepository.GetById(id));
         }
     }
 }
